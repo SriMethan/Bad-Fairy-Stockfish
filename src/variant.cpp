@@ -395,6 +395,13 @@ VariantMap variants; // Global object
         v->promotionPieceTypes = {CHANCELLOR, ROOK, BISHOP, KNIGHT};
         return v;
     }
+    Variant* sortofalmost_variant() {
+        Variant* v = chess_variant();
+        v->add_piece(CHANCELLOR, 'c');
+        v->startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBCKBNR w KQkq - 0 1";
+        v->promotionPieceTypes = {QUEEN, CHANCELLOR, ROOK, BISHOP, KNIGHT};
+        return v;
+    }
     Variant* chigorin_variant() {
         Variant* v = chess_variant();
         v->add_piece(CHANCELLOR, 'c');
@@ -636,6 +643,7 @@ void VariantMap::init() {
     add("euroshogi", euroshogi_variant());
     add("losalamos", losalamos_variant());
     add("almost", almost_variant());
+    add("sortofalmost", sortofalmost_variant());
     add("chigorin", chigorin_variant());
     add("shatar", shatar_variant());
     add("clobber", clobber_variant());
