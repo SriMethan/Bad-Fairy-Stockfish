@@ -154,4 +154,6 @@ private:
 
 extern VariantMap variants;
 
+extern std::ostream& operator<<(std::ostream& os, const VariantMap::iterator& variantIterator);
+
 #endif // #ifndef VARIANT_H_INCLUDED

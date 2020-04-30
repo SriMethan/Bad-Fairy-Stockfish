@@ -221,6 +221,17 @@ namespace {
         variants.parse<true>(token);
   }
 
+  // rules() prints the rules of the given variant.
+
+  void rules(istringstream& is) {
+
+    string token;
+    if (is >> token && variants.find(token) != variants.end())
+        sync_cout << variants.find(token) << sync_endl;
+    else
+        sync_cout << "No such variant: " << token << sync_endl;
+  }
+
 } // namespace
 
 
@@ -302,6 +313,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
       else if (token == "load")     { load(is); argc = 1; } // continue reading stdin
       else if (token == "check")    check(is);
+      else if (token == "rules")    rules(is);
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;
 

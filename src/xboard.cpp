@@ -83,6 +83,17 @@ namespace {
     moveList.pop_back();
   }
 
+  // rules() prints the rules of the given variant.
+
+  void rules(std::istringstream& is) {
+
+    std::string token;
+    if (is >> token && variants.find(token) != variants.end())
+        sync_cout << variants.find(token) << sync_endl;
+    else
+        sync_cout << "Error (unkown command): " << token << sync_endl;
+  }
+
 } // namespace
 
 namespace XBoard {
@@ -364,6 +375,8 @@ void StateMachine::process_command(Position& pos, std::string token, std::istrin
       sync_cout << pos << sync_endl;
   else if (token == "eval")
       sync_cout << Eval::trace(pos) << sync_endl;
+  else if (token == "rules")
+      rules(is);
   // Move strings and unknown commands
   else
   {
