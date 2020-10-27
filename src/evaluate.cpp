@@ -1249,7 +1249,7 @@ namespace {
     // No initiative bonus for extinction variants
     int complexity = 0;
     bool pawnsOnBothFlanks = true;
-    if (pos.extinction_value() == VALUE_NONE && !pos.captures_to_hand() && !pos.connect_n() && !pos.material_counting())
+    if (pos.extinction_value() == VALUE_NONE && !pos.captures_to_hand() && !pos.connect_n() && pos.stalemate_value() == VALUE_DRAW)
     {
     int outflanking = !pos.count<KING>(WHITE) || !pos.count<KING>(BLACK) ? 0
                      :  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
@@ -1259,7 +1259,6 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     bool almostUnwinnable =   outflanking < 0
-                           && pos.stalemate_value() == VALUE_DRAW
                            && !pawnsOnBothFlanks;
 
     bool infiltration =   (pos.count<KING>(WHITE) && rank_of(pos.square<KING>(WHITE)) > RANK_4)
@@ -1268,7 +1267,6 @@ namespace {
     // Compute the initiative bonus for the attacking side
     complexity =       9 * pe->passed_count()
                     + 12 * pos.count<PAWN>()
-                    + 15 * pos.count<SOLDIER>()
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
@@ -1311,11 +1309,25 @@ namespace {
                 && pos.count<KING>(~strongSide)
                 && (attacks_bb<KING>(pos.square<KING>(~strongSide)) & pos.pieces(~strongSide, PAWN)))
             sf = 36;
+        else if (pos.board_bb(~strongSide, KING) != pos.board_bb())
+        {
+            // Compare attacking and defending pieces
+            Value attack = VALUE_ZERO;
+            Value defense = VALUE_ZERO;
+            for (PieceType pt : pos.piece_types())
+            {
+                if (pos.board_bb(~strongSide, KING) & pos.board_bb(strongSide, pt))
+                    attack += PieceValue[EG][pt] * pos.count(strongSide, pt);
+                if (!(pos.board_bb(strongSide, KING) & pos.board_bb(~strongSide, pt)))
+                    defense += PieceValue[EG][pt] * pos.count(~strongSide, pt);
+            }
+            sf = SCALE_FACTOR_NORMAL * std::max(3 * attack - 2 * defense, attack) / std::max(3 * attack + defense, SoldierValueEg);
+        }
         else if (pos.count<QUEEN>() == 1)
             sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
                                                         : pos.count<BISHOP>(WHITE) + pos.count<KNIGHT>(WHITE));
         else
-            sf = std::min(sf, 36 + 7 * (pos.count<PAWN>(strongSide) + pos.count<SOLDIER>(strongSide))) - 4 * !pawnsOnBothFlanks;
+            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide)) - 4 * !pawnsOnBothFlanks;
       
         sf -= 4 * !pawnsOnBothFlanks;
     }
