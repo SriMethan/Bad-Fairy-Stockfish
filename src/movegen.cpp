@@ -154,6 +154,12 @@ namespace {
         while (b2)
         {
             Square to = pop_lsb(b2);
+            if (TRank8BB & to)
+            {
+                moveList = make_promotions<Us, Type, Up + Up>(pos, moveList, to);
+                if (pos.mandatory_pawn_promotion())
+                    continue;
+            }
             *moveList++ = make_move(to - Up - Up, to);
         }
     }
