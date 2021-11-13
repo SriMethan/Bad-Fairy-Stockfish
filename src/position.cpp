@@ -988,6 +988,15 @@ bool Position::legal(Move m) const {
               return false;
   }
 
+  // Multimoves
+  if (!var->multimoves.empty())
+  {
+      if (is_pass(m) != multimove_pass(gamePly))
+          return false;
+      if (multimove_pass(gamePly + 1) && ((!var->multimoveCapture && capture(m)) || (!var->multimoveCheck && gives_check(m))))
+          return false;
+  }
+
   // Check for attacks to pseudo-royal pieces
   if (var->extinctionPseudoRoyal)
   {
