@@ -128,6 +128,10 @@ namespace {
         Bitboard b1 = shift<Up>(pawnsNotOn7)   & emptySquares;
         Bitboard b2 = pos.double_step_enabled() ? shift<Up>(b1 & TRank3BB) & emptySquares : Bitboard(0);
 
+        // Remove illegal non-promotion double steps
+        if (pos.mandatory_pawn_promotion())
+            b2 &= ~TRank8BB;
+
         if (Type == EVASIONS) // Consider only blocking squares
         {
             b1 &= target;
@@ -154,12 +158,6 @@ namespace {
         while (b2)
         {
             Square to = pop_lsb(b2);
-            if (TRank8BB & to)
-            {
-                moveList = make_promotions<Us, Type, Up + Up>(pos, moveList, to);
-                if (pos.mandatory_pawn_promotion())
-                    continue;
-            }
             *moveList++ = make_move(to - Up - Up, to);
         }
     }
@@ -182,6 +180,19 @@ namespace {
 
         while (b3)
             moveList = make_promotions<Us, Type, Up     >(pos, moveList, pop_lsb(b3));
+    }
+
+    // Double-step promotions
+    if (pos.double_step_enabled())
+    {
+        Bitboard pawnsOn6 = pos.pieces(Us, PAWN) & shift<Down>(TRank7BB);
+        Bitboard b2 = shift<Up>(shift<Up>(pawnsOn6) & TRank3BB & emptySquares) & emptySquares;
+
+        if (Type == EVASIONS) // Consider only blocking squares
+            b2 &= target;
+
+        while (b2)
+            moveList = make_promotions<Us, Type, Up + Up>(pos, moveList, pop_lsb(b2));
     }
 
     // Sittuyin promotions
