@@ -989,7 +989,7 @@ bool Position::legal(Move m) const {
   }
 
   // Multimoves
-  if (!var->multimoves.empty())
+  if (var->multimoveOffset)
   {
       if (is_pass(m) != multimove_pass(gamePly))
           return false;

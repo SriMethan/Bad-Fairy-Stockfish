@@ -739,7 +739,7 @@ inline Bitboard Position::diagonal_lines() const {
 
 inline bool Position::pass() const {
   assert(var != nullptr);
-  return var->pass || var->passOnStalemate || !var->multimoves.empty();
+  return var->pass || var->passOnStalemate || var->multimoveOffset;
 }
 
 inline bool Position::pass_on_stalemate() const {
