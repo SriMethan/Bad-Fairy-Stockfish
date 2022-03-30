@@ -146,7 +146,7 @@ string engine_info(bool to_uci, bool to_xboard) {
   string month, day, year;
   stringstream ss, date(__DATE__); // From compiler, format is "Sep 21 2008"
 
-  ss << "Fairy-Stockfish " << Version << setfill('0');
+  ss << "Bad-Fairy-Stockfish " << Version << setfill('0');
 
   if (Version.empty())
   {
@@ -160,7 +160,7 @@ string engine_info(bool to_uci, bool to_xboard) {
 
   if (!to_xboard)
     ss << (to_uci  ? "\nid author ": " by ")
-       << "Fabian Fichter";
+       << "SriMethan";
 
   return ss.str();
 }
